@@ -64,7 +64,7 @@ You will need to update the sample to use your values for audienceURI and for th
 
 * `$ node server.js | bunyan`
 
-### Your done!
+### You're done!
 
 You will have a server successfully running on `http://localhost:8888`. Your REST / JSON API Endpoint will be `http://localhost:8888/tasks`
 
