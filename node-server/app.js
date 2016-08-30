@@ -356,38 +356,38 @@ passport.use(oidcStrategy);
 /* we don't need to maintain session state. You can experiement removing API protection
 /* by removing the passport.authenticate() method like so:
 /*
-/* server.get('/tasks', listTasks);
+/* server.get('/api/tasks', listTasks);
 /*
 **/
 
-server.get('/tasks', passport.authenticate('oauth-bearer', {
+server.get('/api/tasks', passport.authenticate('oauth-bearer', {
     session: false
 }), listTasks);
-server.get('/tasks', passport.authenticate('oauth-bearer', {
+server.get('/api/tasks', passport.authenticate('oauth-bearer', {
     session: false
 }), listTasks);
-server.get('/tasks/:owner', passport.authenticate('oauth-bearer', {
+server.get('/api/tasks/:owner', passport.authenticate('oauth-bearer', {
     session: false
 }), getTask);
-server.head('/tasks/:owner', passport.authenticate('oauth-bearer', {
+server.head('/api/tasks/:owner', passport.authenticate('oauth-bearer', {
     session: false
 }), getTask);
-server.post('/tasks/:owner/:task', passport.authenticate('oauth-bearer', {
+server.post('/api/tasks/:owner/:task', passport.authenticate('oauth-bearer', {
     session: false
 }), createTask);
-server.post('/tasks', passport.authenticate('oauth-bearer', {
+server.post('/api/tasks', passport.authenticate('oauth-bearer', {
     session: false
 }), createTask);
-server.del('/tasks/:owner/:task', passport.authenticate('oauth-bearer', {
+server.del('/api/tasks/:owner/:task', passport.authenticate('oauth-bearer', {
     session: false
 }), removeTask);
-server.del('/tasks/:owner', passport.authenticate('oauth-bearer', {
+server.del('/api/tasks/:owner', passport.authenticate('oauth-bearer', {
     session: false
 }), removeTask);
-server.del('/tasks', passport.authenticate('oauth-bearer', {
+server.del('/api/tasks', passport.authenticate('oauth-bearer', {
     session: false
 }), removeTask);
-server.del('/tasks', passport.authenticate('oauth-bearer', {
+server.del('/api/tasks', passport.authenticate('oauth-bearer', {
     session: false
 }), removeAll, function respond(req, res, next) {
     res.send(204);
@@ -400,12 +400,12 @@ server.del('/tasks', passport.authenticate('oauth-bearer', {
 server.get('/', function root(req, res, next) {
     var routes = [
         'GET     /',
-        'POST    /tasks/:owner/:task',
-        'POST    /tasks (for JSON body)',
-        'GET     /tasks',
-        'PUT     /tasks/:owner',
-        'GET     /tasks/:owner',
-        'DELETE  /tasks/:owner/:task'
+        'POST    /api/tasks/:owner/:task',
+        'POST    /api/tasks (for JSON body)',
+        'GET     /api/tasks',
+        'PUT     /api/tasks/:owner',
+        'GET     /api/tasks/:owner',
+        'DELETE  /api/tasks/:owner/:task'
     ];
     res.send(200, routes);
     next();
@@ -417,7 +417,7 @@ server.listen(serverPort, function() {
     var consoleMessage = '\n Windows Azure Active Directory Tutorial';
     consoleMessage += '\n +++++++++++++++++++++++++++++++++++++++++++++++++++++';
     consoleMessage += '\n %s server is listening at %s';
-    consoleMessage += '\n Open your browser to %s/tasks\n';
+    consoleMessage += '\n Open your browser to %s/api/tasks\n';
     consoleMessage += '+++++++++++++++++++++++++++++++++++++++++++++++++++++ \n';
     consoleMessage += '\n !!! why not try a $curl -isS %s | json to get some ideas? \n';
     consoleMessage += '+++++++++++++++++++++++++++++++++++++++++++++++++++++ \n\n';
