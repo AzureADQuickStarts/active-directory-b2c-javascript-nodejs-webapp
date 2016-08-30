@@ -42,7 +42,8 @@ var options = {
     tenantName: config.creds.tenantName,
     policyName: config.creds.policyName,
     validateIssuer: config.creds.validateIssuer,
-    audience: config.creds.audience
+    audience: config.creds.audience,
+    passReqToCallback: config.creds.passReqToCallback
 
 };
 
@@ -68,7 +69,7 @@ log.info('MongoDB Schema loaded');
 // Here we create a schema to store our tasks and users. Pretty simple schema for now.
 var TaskSchema = new Schema({
     owner: String,
-    task: String,
+    Text: String,
     completed: Boolean,
     date: Date
 });
@@ -97,16 +98,16 @@ function createTask(req, res, next) {
     // Create a new task model, fill it up and save it to Mongodb
     var _task = new Task();
 
-    if (!req.params.task) {
+    if (!req.params.Text) {
         req.log.warn({
-            params: p
+            params: req.params
         }, 'createTodo: missing task');
         next(new MissingTaskError());
         return;
     }
 
     _task.owner = owner;
-    _task.task = req.params.task;
+    _task.Text = req.params.Text;
     _task.date = new Date();
 
     _task.save(function(err) {
@@ -129,16 +130,16 @@ function createTask(req, res, next) {
 function removeTask(req, res, next) {
 
     Task.remove({
-        task: req.params.task,
+        task: req.params.Text,
         owner: owner
     }, function(err) {
         if (err) {
             req.log.warn(err,
                 'removeTask: unable to delete %s',
-                req.params.task);
+                req.params.Text);
             next(err);
         } else {
-            log.info('Deleted task:', req.params.task);
+            log.info('Deleted task:', req.params.Text);
             res.send(204);
             next();
         }
@@ -218,7 +219,7 @@ function MissingTaskError() {
     restify.RestError.call(this, {
         statusCode: 409,
         restCode: 'MissingTask',
-        message: '"task" is a required parameter',
+        message: '"Text" is a required parameter',
         constructorOpt: MissingTaskError
     });
 
@@ -314,7 +315,7 @@ server.use(passport.session()); // Provides session support
 var findById = function(id, fn) {
     for (var i = 0, len = users.length; i < len; i++) {
         var user = users[i];
-        if (user.sub === id) {
+        if (user.oid === id) {
             log.info('Found user: ', user);
             return fn(null, user);
         }
@@ -333,9 +334,9 @@ var oidcStrategy = new OIDCBearerStrategy(options,
             }
             if (!user) {
                 // "Auto-registration"
-                log.info('User was added automatically as they were new. Their sub is: ', token.sub);
+                log.info('User was added automatically as they were new. Their sub is: ', token.oid);
                 users.push(token);
-                owner = token.sub;
+                owner = token.oid;
                 return done(null, token);
             }
             owner = token.sub;
@@ -355,38 +356,38 @@ passport.use(oidcStrategy);
 /* we don't need to maintain session state. You can experiement removing API protection
 /* by removing the passport.authenticate() method like so:
 /*
-/* server.get('/tasks', listTasks);
+/* server.get('/api/tasks', listTasks);
 /*
 **/
 
-server.get('/tasks', passport.authenticate('oauth-bearer', {
+server.get('/api/tasks', passport.authenticate('oauth-bearer', {
     session: false
 }), listTasks);
-server.get('/tasks', passport.authenticate('oauth-bearer', {
+server.get('/api/tasks', passport.authenticate('oauth-bearer', {
     session: false
 }), listTasks);
-server.get('/tasks/:owner', passport.authenticate('oauth-bearer', {
+server.get('/api/tasks/:owner', passport.authenticate('oauth-bearer', {
     session: false
 }), getTask);
-server.head('/tasks/:owner', passport.authenticate('oauth-bearer', {
+server.head('/api/tasks/:owner', passport.authenticate('oauth-bearer', {
     session: false
 }), getTask);
-server.post('/tasks/:owner/:task', passport.authenticate('oauth-bearer', {
+server.post('/api/tasks/:owner/:task', passport.authenticate('oauth-bearer', {
     session: false
 }), createTask);
-server.post('/tasks', passport.authenticate('oauth-bearer', {
+server.post('/api/tasks', passport.authenticate('oauth-bearer', {
     session: false
 }), createTask);
-server.del('/tasks/:owner/:task', passport.authenticate('oauth-bearer', {
+server.del('/api/tasks/:owner/:task', passport.authenticate('oauth-bearer', {
     session: false
 }), removeTask);
-server.del('/tasks/:owner', passport.authenticate('oauth-bearer', {
+server.del('/api/tasks/:owner', passport.authenticate('oauth-bearer', {
     session: false
 }), removeTask);
-server.del('/tasks', passport.authenticate('oauth-bearer', {
+server.del('/api/tasks', passport.authenticate('oauth-bearer', {
     session: false
 }), removeTask);
-server.del('/tasks', passport.authenticate('oauth-bearer', {
+server.del('/api/tasks', passport.authenticate('oauth-bearer', {
     session: false
 }), removeAll, function respond(req, res, next) {
     res.send(204);
@@ -399,12 +400,12 @@ server.del('/tasks', passport.authenticate('oauth-bearer', {
 server.get('/', function root(req, res, next) {
     var routes = [
         'GET     /',
-        'POST    /tasks/:owner/:task',
-        'POST    /tasks (for JSON body)',
-        'GET     /tasks',
-        'PUT     /tasks/:owner',
-        'GET     /tasks/:owner',
-        'DELETE  /tasks/:owner/:task'
+        'POST    /api/tasks/:owner/:task',
+        'POST    /api/tasks (for JSON body)',
+        'GET     /api/tasks',
+        'PUT     /api/tasks/:owner',
+        'GET     /api/tasks/:owner',
+        'DELETE  /api/tasks/:owner/:task'
     ];
     res.send(200, routes);
     next();
@@ -416,7 +417,7 @@ server.listen(serverPort, function() {
     var consoleMessage = '\n Windows Azure Active Directory Tutorial';
     consoleMessage += '\n +++++++++++++++++++++++++++++++++++++++++++++++++++++';
     consoleMessage += '\n %s server is listening at %s';
-    consoleMessage += '\n Open your browser to %s/tasks\n';
+    consoleMessage += '\n Open your browser to %s/api/tasks\n';
     consoleMessage += '+++++++++++++++++++++++++++++++++++++++++++++++++++++ \n';
     consoleMessage += '\n !!! why not try a $curl -isS %s | json to get some ideas? \n';
     consoleMessage += '+++++++++++++++++++++++++++++++++++++++++++++++++++++ \n\n';
