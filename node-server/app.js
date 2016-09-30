@@ -39,12 +39,14 @@ var options = {
     // The URL of the metadata document for your app. We will put the keys for token validation from the URL found in the jwks_uri tag of the in the metadata.
     identityMetadata: config.creds.identityMetadata,
     clientID: config.creds.clientID,
-    tenantName: config.creds.tenantName,
-    policyName: config.creds.policyName,
     validateIssuer: config.creds.validateIssuer,
+    issuer: config.creds.issuer,
+    passReqToCallback: config.creds.passReqToCallback,
+    isB2C: config.creds.isB2C,
+    policyName: config.creds.policyName,
+    allowMultiAudiencesInToken: config.creds.allowMultiAudiencesInToken,
     audience: config.creds.audience,
-    passReqToCallback: config.creds.passReqToCallback
-
+    loggingLevel: config.creds.loggingLevel,
 };
 
 // array to hold logged in users and the current logged in user (owner)
@@ -59,7 +61,7 @@ var log = bunyan.createLogger({
 // MongoDB setup
 // Setup some configuration
 var serverPort = process.env.PORT || 3000;
-var serverURI = (process.env.PORT) ? config.creds.mongoose_auth_mongohq : config.creds.mongoose_auth_local;
+var serverURI = (process.env.PORT) ? config.mongoose_auth_mongohq : config.mongoose_auth_local;
 
 // Connect to MongoDB
 global.db = mongoose.connect(serverURI);
@@ -324,28 +326,28 @@ var findById = function(id, fn) {
 };
 
 
-var oidcStrategy = new OIDCBearerStrategy(options,
+var bearerStrategy = new OIDCBearerStrategy(options,
     function(token, done) {
         log.info('verifying the user');
         log.info(token, 'was the token retreived');
-        findById(token.sub, function(err, user) {
+        findById(token.oid, function(err, user) {
             if (err) {
                 return done(err);
             }
             if (!user) {
                 // "Auto-registration"
-                log.info('User was added automatically as they were new. Their sub is: ', token.oid);
+                log.info('User was added automatically as they were new. Their oid is: ', token.oid);
                 users.push(token);
                 owner = token.oid;
                 return done(null, token);
             }
-            owner = token.sub;
+            owner = token.oid;
             return done(null, user, token);
         });
     }
 );
 
-passport.use(oidcStrategy);
+passport.use(bearerStrategy);
 
 /// Now the real handlers. Here we just CRUD
 

@@ -1,7 +1,5 @@
 #Azure Active Directory B2C Sample REST API Service for Node.js using MongoDB and Restify
 
-[![Join the chat at https://gitter.im/AzureADSamples/WebAPI-Nodejs](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/AzureADSamples/WebAPI-Nodejs?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-
 This Node.js server will give you with a quick and easy way to set up a REST API Service using the OAuth2 protocol. Then this service is integrated with Azure Active Directory for API protection. The sample server included in the download are designed to run on any platform.
 
 This REST API server is built using Restify and MongoDB with the following features:
@@ -16,13 +14,15 @@ We've released all of the source code for this example in GitHub under an Apache
 
 Getting started with the sample is easy. It is configured to run out of the box with minimal setup.
 
-### Step 1: Register a Microsoft Azure AD Tenant
+### Step 1: Register a Microsoft Azure AD B2C Tenant
 
-To use this sample you will need a Microsoft Azure Active Directory Tenant. If you're not sure what a tenant is or how you would get one, read [What is an Azure AD tenant](http://technet.microsoft.com/library/jj573650.aspx)? or [Sign up for Azure as an organization](http://azure.microsoft.com/en-us/documentation/articles/sign-up-organization/). These docs should get you started on your way to using Microsoft Azure AD.
+If you don't have an Azure AD B2C Tenant yet, please [create one](https://azure.microsoft.com/en-us/documentation/articles/active-directory-b2c-get-started/).
 
-### Step 2: Register your Web API with your Microsoft Azure AD Tenant
+### Step 2: Register your Web API with your Microsoft Azure AD B2C Tenant
 
-After you get your Microsoft Azure AD tenant, add this sample app to your tenant so you can use it to protect your API endpoints. If you need help with this step, see: [Register the REST API Service Microsoft Azure Active Directory](https://github.com/AzureADSamples/B2C-WebAPI-Nodejs/wiki/Setup-Microsoft-Azure-AD)
+* In the main page of your tenant, click `Manage B2C settings`, and you will be redirected to the settings page.
+
+* Click `Applications`, then click `Add`. Enter a name like 'my_b2c_webapi', and switch the `Web App / Web API` option to yes. After that, enter 'http://localhost:3000' into the `Reply URL` field, and click 'Create' to create the application. Click the application you just created, copy the `Application ID` field and save it somewhere. This value is the clientID of your web api. 
 
 ### Step 3: Download node.js for your platform
 To successfully use this sample, you need a working installation of Node.js.
@@ -44,29 +44,32 @@ Next, clone the sample repo and install the NPM.
 
 From your shell or command line:
 
-* `$ git clone git@github.com:AzureADSamples/B2C-WebAPI-Nodejs.git`
-* `$ cd node-server`
-* `$ npm install`
+```
+$ git clone git@github.com:AzureADQuickStarts/B2C-WebApi-Nodejs.git
+$ cd node-server
+$ npm install
+```
 
 ### Step 6: Configure your server using config.js
 
-You will need to update the sample to use your values for audienceURI and for the metadata endpoint.
-
-**NOTE:** You may also pass the `issuer:` value if you wish to validate that as well.
+Please update the `exports.creds` and `exports.mongoose_auth_local` in config.js as instructed.
 
 ### Step 7: Run the application
 
-
-* `$ cd node-server	`
-* `$ node app.js`
+```
+$ cd node-server
+$ node app.js
+```
 
 **Is the server output hard to understand?:** We use `bunyan` for logging in this sample. The console won't make much sense to you unless you also install bunyan and run the server like above but pipe it through the bunyan binary:
 
-* `$ node server.js | bunyan`
+```
+$ node server.js | bunyan
+```
 
 ### You're done!
 
-You will have a server successfully running on `http://localhost:8888`. Your REST / JSON API Endpoint will be `http://localhost:8888/tasks`
+You will have a server successfully running on `http://localhost:3000`. Your REST / JSON API Endpoint will be `http://localhost:3000/api/tasks`
 
 ### Acknowledgements
 
