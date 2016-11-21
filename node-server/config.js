@@ -1,11 +1,11 @@
 // Don't commit this file to your public repos. This config is for first-run
 exports.creds = {
   // Requried. Tenent-specific endpoint is required.
-  identityMetadata: 'https://login.microsoftonline.com/<your_tenant_name>.onmicrosoft.com/v2.0/.well-known/openid-configuration',
+  identityMetadata: 'https://login.microsoftonline.com/sijun1b2c.onmicrosoft.com/v2.0/.well-known/openid-configuration',
   // or 'https://login.microsoftonline.com/<your_tenant_guid>/v2.0/.well-known/openid-configuration'
   
   // Required
-  clientID: '<client ID>',
+  clientID: 'f0b6e4eb-2d8c-40b6-b9c6-e26d1074846d',
 
   // Required
   validateIssuer: true,
@@ -19,7 +19,7 @@ exports.creds = {
   isB2C: true,
 
   // Required to use B2C
-  policyName:'<policy>',
+  policyName:'B2C_1_signin',
 
   // Optional, we use the issuer from metadata by default
   issuer: null,
