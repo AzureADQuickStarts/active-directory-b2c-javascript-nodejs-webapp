@@ -20,9 +20,17 @@ If you don't have an Azure AD B2C Tenant yet, please [create one](https://azure.
 
 ### Step 2: Register your Web API with your Microsoft Azure AD B2C Tenant
 
-* In the main page of your tenant, click `Manage B2C settings`, and you will be redirected to the settings page.
+* [Register a new application](https://docs.microsoft.com/en-us/azure/active-directory-b2c/tutorial-register-applications?tabs=app-reg-preview) using the Azure Portal. 
+    * Use the following information during the app registration: 
 
-* Click `Applications`, then click `Add`. Enter a name like 'my_b2c_webapi', and switch the `Web App / Web API` option to yes. After that, enter 'http://localhost:3000' into the `Reply URL` field, and click 'Create' to create the application. Click the application you just created, copy the `Application ID` field and save it somewhere. This value is the clientID of your web api. 
+    | Configuration           | Value                                                             |
+    |-------------------------|-------------------------------------------------------------------|
+    | Application Name        | my_b2c_webapi                                                     |
+    | Supported account types | Accounts in any organizational directory or any identity provider |
+    | Redirect URI            | http://localhost:3000                                             |
+    | Permissions             | Grant admin consent to openid and offline_access permissions      |
+
+* Copy the `Application ID` field and save it somewhere. This value is the clientID of your web api. 
 
 ### Step 3: Download node.js for your platform
 To successfully use this sample, you need a working installation of Node.js.
